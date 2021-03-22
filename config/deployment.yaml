@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integration-test
+  labels:
+    app: integration-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: integration-test
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: integration-test
+    spec:
+      containers:
+      - name: integration-test
+        image: <IMAGE>
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 100m
