@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
 WORKDIR /app
-COPY helloworld234 /app
+COPY helloworld /app
 
 
 # Creates a non-root user and adds permission to access the /app folder
