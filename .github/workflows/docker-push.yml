@@ -17,3 +17,31 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: wgrcunha/integration-test
           tag_with_ref: true
+
+  deploy_on_k8s:
+    name: Deploy the new release on kubernetes cluster
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout master
+      uses: actions/checkout@master
+
+    - name: Update SHA
+      run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
+
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Update deployment file
+      run: sed -i 's|<IMAGE>|wgrcunha/integration-test:'${GITHUB_REF}'|' $GITHUB_WORKSPACE/config/deployment.yml
+
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 actions-example-k8s-1-18
+
+    - name: Deploy to DigitalOcean Kubernetes
+      run: kubectl apply -f $GITHUB_WORKSPACE/config/deployment.yml
+
+    - name: Verify deployment
+      run: kubectl rollout status deployment/integration-test
