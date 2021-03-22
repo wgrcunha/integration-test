@@ -33,7 +33,7 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
     - name: Update deployment file
-      run: sed -i 's|<IMAGE>|wgrcunha/integration-test:'${GITHUB_REF}'|' $GITHUB_WORKSPACE/config/deployment.yml
+      run: sed -i 's|<IMAGE>|wgrcunha/integration-test:'${GITHUB_REF#refs/tags/}'|' $GITHUB_WORKSPACE/config/deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 freire-k8s
