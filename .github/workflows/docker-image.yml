@@ -16,4 +16,7 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag integrationtest:$(date +%s)
+      run: docker build . --file Dockerfile --tag integrationtest:$GITHUB_SHA
+    
+    - name: Run python tests
+      run: docker run --rm integrationtest:$GITHUB_SHA python manage.py test 
